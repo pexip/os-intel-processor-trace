@@ -1,0 +1,2 @@
+version=3
+https://github.com/01org/processor-trace/tags .*/v?(\d\S*)\.tar\.gz
