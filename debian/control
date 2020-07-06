@@ -1,18 +1,20 @@
 Source: intel-processor-trace
 Priority: optional
-Maintainer: Victor Seva <vseva@debian.org>
-Uploaders:
+Maintainer: Pexip AS <packaging@pexip.com>
+XSBC-Pexip-Original-Maintainer: Victor Seva <vseva@debian.org>
+XSBC-Pexip-Original-Uploaders:
  Héctor Orón Martínez <zumbi@debian.org>,
  Sergio Durigan Junior <sergiodj@debian.org>
 Build-Depends:
  cmake,
- debhelper (>= 11),
+ debhelper (>= 9),
 Standards-Version: 4.2.1
 Rules-Requires-Root: no
 Section: libs
 Homepage: https://github.com/01org/processor-trace/
 Vcs-Git: https://salsa.debian.org/gdb-team/intel-processor-trace.git
 Vcs-Browser: https://salsa.debian.org/gdb-team/intel-processor-trace
+XS-Pexip-Upstream: http://mirror.einval.org/debian/ buster
 
 Package: libipt-dev
 Section: libdevel

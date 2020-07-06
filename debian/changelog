@@ -1,3 +1,10 @@
+intel-processor-trace (2.0-2pexip1) pexip; urgency=medium
+
+  * Prepare Pexip packaging
+  * Tweak debhelper dependency to allow building in stretch too
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Mon, 06 Jul 2020 12:16:03 +0000
+
 intel-processor-trace (2.0-2) unstable; urgency=medium
 
   * Enable testsuite during build.
