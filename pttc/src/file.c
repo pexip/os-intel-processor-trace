@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -240,6 +240,7 @@ static int fl_append(struct file_list *fl, struct text **t,
 	fclose(f);
 	if (read != fsize) {
 		fprintf(stderr, "read %s failed\n", filename);
+		free(s);
 		errcode = -err_file_read;
 		goto error;
 	}

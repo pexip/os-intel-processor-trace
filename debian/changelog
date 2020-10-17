@@ -1,3 +1,41 @@
+intel-processor-trace (2.0.3-1) unstable; urgency=medium
+
+  * New upstream version 2.0.3
+  * d/libipt2.lintian-overrides: Update override.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Fri, 16 Oct 2020 21:07:58 -0400
+
+intel-processor-trace (2.0.2-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Set upstream metadata fields: Bug-Database, Repository, Repository-
+    Browse.
+  * Update standards version to 4.4.1, no changes needed.
+
+  [ Sergio Durigan Junior ]
+  * New upstream version 2.0.2
+  * Update copyright years on d/copyright.
+  * Fix my e-mail address on d/copyright, and update years.
+  * d/control: Bump Standards-Version to 4.5.0.
+  * d/libipt2.lintian-overrides: Update library version.
+  * d/control: Bump debhelper-compat to 13.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Mon, 13 Jul 2020 19:06:39 -0400
+
+intel-processor-trace (2.0.1-1) unstable; urgency=medium
+
+  [ Edward Betts ]
+  * Upstream GitHub repo has moved, update URLs.
+
+  [ Sergio Durigan Junior ]
+  * New upstream version 2.0.1
+  * Bump Standards-Version to 4.4.0.
+  * Bump compat version to 12.
+  * Update d/libipt2.lintian-overrides.
+  * Add Build-Depends-Package to d/libipt2.symbols.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Sun, 18 Aug 2019 17:54:27 -0400
+
 intel-processor-trace (2.0-2) unstable; urgency=medium
 
   * Enable testsuite during build.

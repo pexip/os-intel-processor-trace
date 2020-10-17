@@ -2,7 +2,7 @@ Building the Intel(R) Processor Trace (Intel PT) Decoder Library and Samples {#b
 ============================================================================
 
 <!---
- ! Copyright (c) 2013-2018, Intel Corporation
+ ! Copyright (c) 2013-2020, Intel Corporation
  !
  ! Redistribution and use in source and binary forms, with or without
  ! modification, are permitted provided that the following conditions are met:
@@ -126,6 +126,11 @@ files must be specified.
 
 When using XED from a PIN distribution, the respective directories are located
 in `extras/xed2-<arch>/`.
+
+When using XED from github, the respective directories are located in the
+install directory (default: kits/xed-install-date-os-cpu) and the header
+files are located in include/xed.  Please refer to the README in the XED
+tree on how to build XED.
 
 
 ## Building on Linux``*`` and OS X``*``

@@ -6,11 +6,11 @@ Uploaders:
  Sergio Durigan Junior <sergiodj@debian.org>
 Build-Depends:
  cmake,
- debhelper (>= 11),
-Standards-Version: 4.2.1
+ debhelper-compat (= 13),
+Standards-Version: 4.5.0
 Rules-Requires-Root: no
 Section: libs
-Homepage: https://github.com/01org/processor-trace/
+Homepage: https://github.com/intel/libipt
 Vcs-Git: https://salsa.debian.org/gdb-team/intel-processor-trace.git
 Vcs-Browser: https://salsa.debian.org/gdb-team/intel-processor-trace
 

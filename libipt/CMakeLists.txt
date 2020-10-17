@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2018, Intel Corporation
+# Copyright (c) 2013-2020, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -64,28 +64,28 @@ if (CMAKE_HOST_UNIX)
     internal/include/posix
   )
 
-  set(LIBIPT_FILES ${LIBIPT_FILES} src/posix/init.c)
   set(LIBIPT_SECTION_FILES ${LIBIPT_SECTION_FILES} src/posix/pt_section_posix.c)
 endif (CMAKE_HOST_UNIX)
 
 if (CMAKE_HOST_WIN32)
-  add_definitions(
-    # export libipt symbols
-    #
-    /Dpt_export=__declspec\(dllexport\)
-  )
+  if (BUILD_SHARED_LIBS)
+    add_definitions(
+      # export libipt symbols
+      #
+      /Dpt_export=__declspec\(dllexport\)
+    )
+  endif (BUILD_SHARED_LIBS)
 
   include_directories(
     internal/include/windows
   )
 
-  set(LIBIPT_FILES ${LIBIPT_FILES} src/windows/init.c)
   set(LIBIPT_SECTION_FILES ${LIBIPT_SECTION_FILES} src/windows/pt_section_windows.c)
 endif (CMAKE_HOST_WIN32)
 
 set(LIBIPT_FILES ${LIBIPT_FILES} ${LIBIPT_SECTION_FILES})
 
-add_library(libipt SHARED
+add_library(libipt
   ${LIBIPT_FILES}
 )
 
