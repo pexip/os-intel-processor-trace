@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, Intel Corporation
+ * Copyright (c) 2013-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -358,6 +358,9 @@ int pt_pkt_read_tma(struct pt_packet_tma *packet, const uint8_t *pos,
 	fc |= pos[pt_pl_tma_fc_1] << 8;
 
 	if (fc & ~pt_pl_tma_fc_mask)
+		return -pte_bad_packet;
+
+	if (pos[pt_pl_tma_ctc_1 + 1])
 		return -pte_bad_packet;
 
 	packet->ctc = ctc;

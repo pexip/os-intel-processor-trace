@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Intel Corporation
+ * Copyright (c) 2016-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -80,6 +80,8 @@ typedef enum {
 	PTI_INST_VMPTRLD,
 
 	PTI_INST_PTWRITE,
+
+	PTI_INST_UIRET,
 
 	PTI_INST_LAST
 } pti_inst_enum_t;

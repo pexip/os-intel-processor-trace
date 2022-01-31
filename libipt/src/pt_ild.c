@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, Intel Corporation
+ * Copyright (c) 2013-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -1378,6 +1378,11 @@ static int pt_instruction_decode(struct pt_insn *insn, struct pt_insn_ext *iext,
 			case 0xc3:
 				insn->iclass = ptic_far_return;
 				iext->iclass = PTI_INST_VMRESUME;
+				break;
+
+			case 0xec:
+				insn->iclass = ptic_far_return;
+				iext->iclass = PTI_INST_UIRET;
 				break;
 
 			default:

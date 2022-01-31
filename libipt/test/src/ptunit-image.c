@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, Intel Corporation
+ * Copyright (c) 2013-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -1991,6 +1991,8 @@ static struct ptunit_result validate_null(struct image_fixture *ifix)
 {
 	struct pt_mapped_section msec;
 	int status;
+
+	memset(&msec, 0, sizeof(msec));
 
 	status = pt_image_validate(NULL, &msec, 0x1004ull, 10);
 	ptu_int_eq(status, -pte_internal);
