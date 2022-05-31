@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,13 +43,13 @@
 #endif
 
 
-static int create_section_label_name(char *label, int size, const char *name,
-				     const char *attribute)
+static int create_section_label_name(char *label, size_t size,
+				     const char *name, const char *attribute)
 {
 	int written;
 
 	written = snprintf(label, size, "section_%s_%s", name, attribute);
-	if (size <= written)
+	if ((written < 0) || (size <= (size_t) written))
 		return -err_no_mem;
 
 	return 0;

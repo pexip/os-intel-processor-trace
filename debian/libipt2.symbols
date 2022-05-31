@@ -1,4 +1,5 @@
 libipt.so.2 libipt2 #MINVER#
+* Build-Depends-Package: libipt-dev
  pt_alloc_encoder@Base 2.0
  pt_blk_alloc_decoder@Base 2.0
  pt_blk_asid@Base 2.0

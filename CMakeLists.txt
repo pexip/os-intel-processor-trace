@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2018, Intel Corporation
+# Copyright (c) 2013-2020, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ project(PT C)
 #
 set(PT_VERSION_MAJOR 2)
 set(PT_VERSION_MINOR 0)
-set(PT_VERSION_PATCH 0)
+set(PT_VERSION_PATCH 3)
 set(PT_VERSION_BUILD "0" CACHE STRING "")
 set(PT_VERSION_EXT "" CACHE STRING "")
 
@@ -78,6 +78,7 @@ option(PTTC   "Enable pttc, a test compiler")
 option(PTUNIT "Enable ptunit, a unit test system and libipt unit tests")
 option(MAN "Enable man pages (requires pandoc)." OFF)
 option(SIDEBAND "Enable libipt-sb, a sideband correlation library")
+option(BUILD_SHARED_LIBS "Build the shared library" ON)
 
 if (SIDEBAND)
   option(PEVENT "Enable perf_event sideband support." OFF)
@@ -137,13 +138,24 @@ if (PEVENT)
   )
 endif (PEVENT)
 
+if (NOT BUILD_SHARED_LIBS)
+  add_definitions(
+    # suppress libipt symbols import/export
+    #
+    -Dpt_export=
 
-function(add_cflag_if_available option)
+    # suppress libipt-sb symbols import/export
+    #
+    -Dpt_sb_export=
+  )
+endif (NOT BUILD_SHARED_LIBS)
 
-  check_c_compiler_flag(${option} ${option}_supported)
-  if (${option}_supported)
+function(add_cflag_if_available option guard)
+
+  check_c_compiler_flag(${option} ${guard})
+  if (${guard})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${option}" PARENT_SCOPE)
-  endif (${option}_supported)
+  endif (${guard})
 
 endfunction(add_cflag_if_available)
 
@@ -243,7 +255,10 @@ if (CMAKE_HOST_UNIX)
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra")
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 
-      add_cflag_if_available("-Wimplicit-fallthrough=5")
+      add_cflag_if_available("-Wimplicit-fallthrough=5"
+        HAVE_C_Wimplicit_fallthrough)
+      add_cflag_if_available("-Wno-format-truncation"
+        HAVE_C_Wno_format_truncation)
     endif (CMAKE_C_COMPILER_ID MATCHES "[Cc]lang")
 
     # warnings are errors

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -724,12 +724,8 @@ static int print_tcal(struct ptdump_buffer *buffer,
 		dold_fcr = (double) old_fcr;
 		dold_fcr /= (double) (1ull << pt_tcal_fcr_shr);
 
-		if (old_fcr <= fcr)
-			print_field(buffer->tracking.payload, "+%.3f",
-				    dfcr - dold_fcr);
-		else
-			print_field(buffer->tracking.payload, "-%.3f",
-				    dold_fcr - dfcr);
+		print_field(buffer->tracking.payload, "%+.3f",
+			    dfcr - dold_fcr);
 
 		tracking->fcr = fcr;
 	} else
@@ -1073,6 +1069,14 @@ static int print_packet(struct ptdump_buffer *buffer, uint64_t offset,
 
 	case ppt_psb:
 		print_field(buffer->opcode, "psb");
+
+		if (options->track_time) {
+			int errcode;
+
+			errcode = pt_tcal_update_psb(&tracking->tcal, config);
+			if (errcode < 0)
+				diag("error calibrating time", offset, errcode);
+		}
 
 		tracking->in_header = 1;
 		return 0;

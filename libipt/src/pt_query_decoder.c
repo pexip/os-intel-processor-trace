@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2018, Intel Corporation
+ * Copyright (c) 2014-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -1056,6 +1056,10 @@ int pt_qry_decode_psb(struct pt_query_decoder *decoder)
 	size = pt_pkt_read_psb(pos, &decoder->config);
 	if (size < 0)
 		return size;
+
+	errcode = pt_tcal_update_psb(&decoder->tcal, &decoder->config);
+	if (errcode < 0)
+		return errcode;
 
 	decoder->pos += size;
 
