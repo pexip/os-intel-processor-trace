@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -106,15 +106,16 @@ static char *dupstr(const char *str)
 	if (!str)
 		str = "(null)";
 
-	len = strlen(str);
+	/* Silently truncate the expression string if it gets too big. */
+	len = strnlen(str, 4096ul);
+
 	dup = malloc(len + 1);
 	if (!dup)
 		return NULL;
 
-	strncpy(dup, str, len);
 	dup[len] = 0;
 
-	return dup;
+	return memcpy(dup, str, len);
 }
 
 struct ptunit_result ptunit_mk_failed_str(const char *expr,

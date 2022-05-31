@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -659,11 +659,30 @@ static void check_insn_iclass(const xed_inst_t *inst,
 
 		case XED_CATEGORY_CALL:
 		case XED_CATEGORY_RET:
-		case XED_CATEGORY_COND_BR:
 		case XED_CATEGORY_UNCOND_BR:
-		case XED_CATEGORY_INTERRUPT:
 		case XED_CATEGORY_SYSCALL:
 		case XED_CATEGORY_SYSRET:
+			break;
+
+		case XED_CATEGORY_COND_BR:
+			switch (iclass) {
+			case XED_ICLASS_XBEGIN:
+			case XED_ICLASS_XEND:
+				return;
+
+			default:
+				break;
+			}
+			break;
+
+		case XED_CATEGORY_INTERRUPT:
+			switch (iclass) {
+			case XED_ICLASS_BOUND:
+				return;
+
+			default:
+				break;
+			}
 			break;
 		}
 		break;

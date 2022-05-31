@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2018, Intel Corporation
+ * Copyright (c) 2014-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -322,7 +322,7 @@ static struct ptunit_result read_bad_config(void)
 
 	memset(input.buffer, 0, sizeof(input.buffer));
 	input.header.type = PERF_RECORD_ITRACE_START;
-	input.header.size = sizeof(event.record.itrace_start) + 0x8;
+	input.header.size = sizeof(*event.record.itrace_start) + 0x8;
 
 	memset(&config, 0, sizeof(config));
 	config.sample_type |= (uint64_t) PERF_SAMPLE_CPU;

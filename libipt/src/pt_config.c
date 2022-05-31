@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, Intel Corporation
+ * Copyright (c) 2013-2020, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,14 +61,20 @@ int pt_cpu_errata(struct pt_errata *errata, const struct pt_cpu *cpu)
 		case 0x5e:
 		case 0x8e:
 		case 0x9e:
+		case 0xa5:
+		case 0xa6:
 			errata->bdm70 = 1;
 			errata->skd007 = 1;
 			errata->skd022 = 1;
 			errata->skd010 = 1;
 			errata->skl014 = 1;
+			errata->skl168 = 1;
 			return 0;
 
 		case 0x55:
+		case 0x66:
+		case 0x7d:
+		case 0x7e:
 			errata->bdm70 = 1;
 			errata->skl014 = 1;
 			errata->skd022 = 1;
@@ -81,6 +87,7 @@ int pt_cpu_errata(struct pt_errata *errata, const struct pt_cpu *cpu)
 			return 0;
 
 		case 0x7a:
+		case 0x86:
 			errata->apl11 = 1;
 			return 0;
 		}

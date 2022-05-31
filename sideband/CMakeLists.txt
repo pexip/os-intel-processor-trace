@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018, Intel Corporation
+# Copyright (c) 2017-2020, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -36,14 +36,16 @@ set(LIBSB_FILES
 )
 
 if (CMAKE_HOST_WIN32)
-  add_definitions(
-    # export libipt-sb symbols
-    #
-    /Dpt_sb_export=__declspec\(dllexport\)
-  )
+  if (BUILD_SHARED_LIBS)
+    add_definitions(
+      # export libipt-sb symbols
+      #
+      /Dpt_sb_export=__declspec\(dllexport\)
+    )
+  endif (BUILD_SHARED_LIBS)
 endif (CMAKE_HOST_WIN32)
 
-add_library(libipt-sb SHARED ${LIBSB_FILES})
+add_library(libipt-sb ${LIBSB_FILES})
 
 # put the version into the header
 #
