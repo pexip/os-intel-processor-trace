@@ -1,3 +1,9 @@
+intel-processor-trace (2.0.3-1pexip1) pexip; urgency=medium
+
+  * Initial bullseye build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 02 Jun 2022 14:42:19 +0100
+
 intel-processor-trace (2.0.3-1) unstable; urgency=medium
 
   * New upstream version 2.0.3
