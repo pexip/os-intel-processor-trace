@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Intel Corporation
+ * Copyright (c) 2016-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -1590,7 +1590,7 @@ static int worker_add(void *arg)
 		uint64_t laddr;
 		int sec;
 
-		laddr = 0x1000ull * (it % 23);
+		laddr = 0x1000ull * ((uint64_t)it % 23);
 
 		for (sec = 0; sec < num_sections; ++sec) {
 			struct pt_section *section;
@@ -1877,6 +1877,10 @@ static int worker_add_file_map(void *arg)
 			return errcode;
 
 		errcode = pt_section_unmap(section);
+		if (errcode < 0)
+			return errcode;
+
+		errcode = pt_section_put(section);
 		if (errcode < 0)
 			return errcode;
 	}
