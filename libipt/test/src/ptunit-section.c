@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, Intel Corporation
+ * Copyright (c) 2013-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -701,6 +701,8 @@ static struct ptunit_result attach_map_overflow(struct section_fixture *sfix)
 
 	errcode = pt_section_map(sfix->section);
 	ptu_int_eq(errcode, -pte_overflow);
+
+	sfix->section->mcount = 0;
 
 	errcode = pt_section_detach(sfix->section, &iscache);
 	ptu_int_eq(errcode, 0);

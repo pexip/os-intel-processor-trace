@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Intel Corporation
+ * Copyright (c) 2015-2022, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,8 @@ static struct ptunit_result from_user_null(void)
 {
 	struct pt_config config;
 	int errcode;
+
+	memset(&config, 0, sizeof(config));
 
 	errcode = pt_config_from_user(NULL, &config);
 	ptu_int_eq(errcode, -pte_internal);
