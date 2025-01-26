@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013-2022, Intel Corporation
+ * Copyright (c) 2013-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,22 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static char *dupstr(const char *str)
-{
-	char *dup;
-	size_t len;
-
-	if (!str)
-		return NULL;
-
-	len = strlen(str);
-	dup = malloc(len + 1);
-	if (!dup)
-		return NULL;
-
-	return strcpy(dup, str);
-}
 
 static struct pt_section_list *pt_mk_section_list(struct pt_section *section,
 						  const struct pt_asid *asid,
@@ -108,8 +93,8 @@ void pt_image_init(struct pt_image *image, const char *name)
 		return;
 
 	memset(image, 0, sizeof(*image));
-
-	image->name = dupstr(name);
+	if (name)
+		image->name = strdup(name);
 }
 
 void pt_image_fini(struct pt_image *image)
@@ -315,9 +300,10 @@ int pt_image_add_file(struct pt_image *image, const char *filename,
 	if (errcode < 0)
 		return errcode;
 
-	section = pt_mk_section(filename, offset, size);
-	if (!section)
-		return -pte_invalid;
+	section = NULL;
+	errcode = pt_mk_section(&section, filename, offset, size);
+	if (errcode < 0)
+		return errcode;
 
 	errcode = pt_image_add(image, section, &asid, vaddr, 0);
 	if (errcode < 0) {

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013-2022, Intel Corporation
+ * Copyright (c) 2013-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -53,7 +54,7 @@ int pt_section_mk_status(void **pstatus, uint64_t *psize, const char *filename)
 
 	errcode = stat(filename, &buffer);
 	if (errcode < 0)
-		return errcode;
+		return -pte_bad_file;
 
 	if (buffer.st_size < 0)
 		return -pte_bad_image;
@@ -81,7 +82,7 @@ static int check_file_status(struct pt_section *section, int fd)
 
 	errcode = fstat(fd, &stat);
 	if (errcode)
-		return -pte_bad_image;
+		return -pte_bad_file;
 
 	status = section->status;
 	if (!status)
@@ -218,7 +219,7 @@ int pt_section_map(struct pt_section *section)
 	if (!filename)
 		goto out_unlock;
 
-	errcode = -pte_bad_image;
+	errcode = -pte_bad_file;
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 		goto out_unlock;
@@ -239,8 +240,10 @@ int pt_section_map(struct pt_section *section)
 	 * if we fail to convert the file descriptor.
 	 */
 	file = fdopen(fd, "rb");
-	if (!file)
+	if (!file) {
+		errcode = -pte_bad_file;
 		goto out_fd;
+	}
 
 	/* We need to keep the file open on success.  It will be closed when
 	 * the section is unmapped.

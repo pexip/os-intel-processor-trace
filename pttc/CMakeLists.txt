@@ -1,4 +1,5 @@
-# Copyright (c) 2013-2022, Intel Corporation
+# Copyright (c) 2013-2025, Intel Corporation
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -43,7 +44,6 @@ if (CMAKE_HOST_UNIX)
   set(PTTC_FILES
     ${PTTC_FILES}
     src/posix/util.c
-    ../libipt/src/posix/pt_cpuid.c
   )
 endif (CMAKE_HOST_UNIX)
 
@@ -51,7 +51,6 @@ if (CMAKE_HOST_WIN32)
   set(PTTC_FILES
     ${PTTC_FILES}
     src/windows/util.c
-    ../libipt/src/windows/pt_cpuid.c
   )
 endif (CMAKE_HOST_WIN32)
 

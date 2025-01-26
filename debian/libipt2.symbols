@@ -22,6 +22,15 @@ libipt.so.2 libipt2 #MINVER#
  pt_enc_next@Base 2.0
  pt_enc_sync_set@Base 2.0
  pt_errstr@Base 2.0
+ pt_evt_alloc_decoder@Base 2.1.1
+ pt_evt_free_decoder@Base 2.1.1
+ pt_evt_get_config@Base 2.1.1
+ pt_evt_get_offset@Base 2.1.1
+ pt_evt_get_sync_offset@Base 2.1.1
+ pt_evt_next@Base 2.1.1
+ pt_evt_sync_backward@Base 2.1.1
+ pt_evt_sync_forward@Base 2.1.1
+ pt_evt_sync_set@Base 2.1.1
  pt_free_encoder@Base 2.0
  pt_image_add_cached@Base 2.0
  pt_image_add_file@Base 2.0

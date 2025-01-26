@@ -1,3 +1,24 @@
+intel-processor-trace (2.1.2-1) unstable; urgency=medium
+
+  * New upstream version 2.1.2
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Sat, 25 Jan 2025 20:02:22 -0500
+
+intel-processor-trace (2.1.1-1) unstable; urgency=medium
+
+  * New upstream version 2.1.1
+  * d/control: Bump Standards-Version to 4.7.0; no changes needed.
+  * d/libipt2.symbols: Add new symbols from latest release.
+  * d/libipt2.lintian-overrides: Fix syntax.
+
+ -- Sergio Durigan Junior <sergiodj@debian.org>  Sun, 22 Sep 2024 00:32:28 -0400
+
+intel-processor-trace (2.0.6-1) unstable; urgency=medium
+
+  * New upstream release 2.0.6.
+
+ -- Héctor Orón Martínez <zumbi@debian.org>  Tue, 01 Aug 2023 17:45:55 +0200
+
 intel-processor-trace (2.0.5-1) unstable; urgency=medium
 
   * New upstream version 2.0.5
