@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2022, Intel Corporation
+ * Copyright (c) 2016-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -95,6 +96,7 @@ int pt_insn_is_branch(const struct pt_insn *insn,
 	case ptic_far_call:
 	case ptic_far_return:
 	case ptic_far_jump:
+	case ptic_indirect:
 		return 1;
 	}
 }
@@ -169,6 +171,60 @@ int pt_insn_is_ptwrite(const struct pt_insn *insn,
 	}
 }
 
+int pt_insn_is_iret(const struct pt_insn *insn,
+		    const struct pt_insn_ext *iext)
+{
+	(void) insn;
+
+	if (!iext)
+		return 0;
+
+	switch (iext->iclass) {
+	default:
+		return 0;
+
+	case PTI_INST_IRET:
+	case PTI_INST_SYSRET:
+	case PTI_INST_SYSEXIT:
+		return 1;
+	}
+}
+
+int pt_insn_is_vmentry(const struct pt_insn *insn,
+		       const struct pt_insn_ext *iext)
+{
+	(void) insn;
+
+	if (!iext)
+		return 0;
+
+	switch (iext->iclass) {
+	default:
+		return 0;
+
+	case PTI_INST_VMLAUNCH:
+	case PTI_INST_VMRESUME:
+		return 1;
+	}
+}
+
+int pt_insn_is_uiret(const struct pt_insn *insn,
+		     const struct pt_insn_ext *iext)
+{
+	(void) insn;
+
+	if (!iext)
+		return 0;
+
+	switch (iext->iclass) {
+	default:
+		return 0;
+
+	case PTI_INST_UIRET:
+		return 1;
+	}
+}
+
 int pt_insn_next_ip(uint64_t *pip, const struct pt_insn *insn,
 		    const struct pt_insn_ext *iext)
 {
@@ -196,7 +252,7 @@ int pt_insn_next_ip(uint64_t *pip, const struct pt_insn *insn,
 	default:
 		return -pte_bad_query;
 
-	case ptic_error:
+	case ptic_unknown:
 		return -pte_bad_insn;
 	}
 

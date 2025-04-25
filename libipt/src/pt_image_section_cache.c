@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016-2022, Intel Corporation
+ * Copyright (c) 2016-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,22 +35,6 @@
 #include <stdlib.h>
 
 
-static char *dupstr(const char *str)
-{
-	char *dup;
-	size_t len;
-
-	if (!str)
-		return NULL;
-
-	len = strlen(str);
-	dup = malloc(len + 1);
-	if (!dup)
-		return NULL;
-
-	return strcpy(dup, str);
-}
-
 int pt_iscache_init(struct pt_image_section_cache *iscache, const char *name)
 {
 	if (!iscache)
@@ -58,7 +43,7 @@ int pt_iscache_init(struct pt_image_section_cache *iscache, const char *name)
 	memset(iscache, 0, sizeof(*iscache));
 	iscache->limit = UINT64_MAX;
 	if (name) {
-		iscache->name = dupstr(name);
+		iscache->name = strdup(name);
 		if (!iscache->name)
 			return -pte_nomem;
 	}
@@ -975,9 +960,10 @@ int pt_iscache_add_file(struct pt_image_section_cache *iscache,
 		if (errcode < 0)
 			return errcode;
 
-		section = pt_mk_section(filename, offset, size);
-		if (!section)
-			return -pte_invalid;
+		section = NULL;
+		errcode = pt_mk_section(&section, filename, offset, size);
+		if (errcode < 0)
+			return errcode;
 	}
 
 	/* We unlocked @iscache and hold a reference to @section. */

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2014-2022, Intel Corporation
+ * Copyright (c) 2014-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,20 +33,25 @@
  * soon go away.
  */
 
-#ifndef THREADS_H
-#define THREADS_H
+#ifndef PT_THREADS_H
+#define PT_THREADS_H
 
-#include "windows.h"
+#include <pthread.h>
 
+#if !defined(PTHREAD_MUTEX_NORMAL) && defined(PTHREAD_MUTEX_TIMED_NP)
+#  define PTHREAD_MUTEX_NORMAL PTHREAD_MUTEX_TIMED_NP
+#endif
+
+#include <stdint.h>
+#include <stdlib.h>
 
 enum {
 	thrd_success	= 1,
 	thrd_error
 };
 
-
 struct pt_thread {
-	HANDLE handle;
+	pthread_t thread;
 };
 typedef struct pt_thread thrd_t;
 
@@ -57,14 +63,14 @@ struct thrd_args {
 	void *arg;
 };
 
-static DWORD WINAPI thrd_routine(void *arg)
+static void *thrd_routine(void *arg)
 {
 	struct thrd_args *args;
 	int result;
 
-	args = (struct thrd_args *) arg;
+	args = arg;
 	if (!args)
-		return (DWORD) -1;
+		return (void *) (intptr_t) -1;
 
 	result = -1;
 	if (args->fun)
@@ -72,13 +78,13 @@ static DWORD WINAPI thrd_routine(void *arg)
 
 	free(args);
 
-	return (DWORD) result;
+	return (void *) (intptr_t) result;
 }
 
 static inline int thrd_create(thrd_t *thrd, thrd_start_t fun, void *arg)
 {
 	struct thrd_args *args;
-	HANDLE handle;
+	int errcode;
 
 	if (!thrd || !fun)
 		return thrd_error;
@@ -90,62 +96,50 @@ static inline int thrd_create(thrd_t *thrd, thrd_start_t fun, void *arg)
 	args->fun = fun;
 	args->arg = arg;
 
-	handle = CreateThread(NULL, 0, thrd_routine, args, 0, NULL);
-	if (!handle) {
+	errcode = pthread_create(&thrd->thread, NULL, thrd_routine, args);
+	if (errcode) {
 		free(args);
 		return thrd_error;
 	}
 
-	thrd->handle = handle;
 	return thrd_success;
 }
 
-static inline int thrd_join(thrd_t *thrd, int *res)
+static inline int thrd_join(thrd_t thrd, int *res)
 {
-	DWORD status;
-	BOOL success;
+	void *result;
+	int errcode;
 
-	if (!thrd)
+	errcode = pthread_join(thrd.thread, &result);
+	if (errcode)
 		return thrd_error;
 
-	status = WaitForSingleObject(thrd->handle, INFINITE);
-	if (status)
-		return thrd_error;
-
-	if (res) {
-		DWORD result;
-
-		success = GetExitCodeThread(thrd->handle, &result);
-		if (!success) {
-			(void) CloseHandle(thrd->handle);
-			return thrd_error;
-		}
-
-		*res = (int) result;
-	}
-
-	success = CloseHandle(thrd->handle);
-	if (!success)
-		return thrd_error;
+	if (res)
+		*res = (int) (intptr_t) result;
 
 	return thrd_success;
 }
+
 
 struct pt_mutex {
-	CRITICAL_SECTION cs;
+	pthread_mutex_t mutex;
 };
 typedef struct pt_mutex mtx_t;
 
 enum {
-	mtx_plain
+	mtx_plain = PTHREAD_MUTEX_NORMAL
 };
 
 static inline int mtx_init(mtx_t *mtx, int type)
 {
+	int errcode;
+
 	if (!mtx || type != mtx_plain)
 		return thrd_error;
 
-	InitializeCriticalSection(&mtx->cs);
+	errcode = pthread_mutex_init(&mtx->mutex, NULL);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
@@ -153,87 +147,111 @@ static inline int mtx_init(mtx_t *mtx, int type)
 static inline void mtx_destroy(mtx_t *mtx)
 {
 	if (mtx)
-		DeleteCriticalSection(&mtx->cs);
+		(void) pthread_mutex_destroy(&mtx->mutex);
 }
 
 static inline int mtx_lock(mtx_t *mtx)
 {
+	int errcode;
+
 	if (!mtx)
 		return thrd_error;
 
-	EnterCriticalSection(&mtx->cs);
+	errcode = pthread_mutex_lock(&mtx->mutex);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 static inline int mtx_unlock(mtx_t *mtx)
 {
+	int errcode;
+
 	if (!mtx)
 		return thrd_error;
 
-	LeaveCriticalSection(&mtx->cs);
+	errcode = pthread_mutex_unlock(&mtx->mutex);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 
 struct pt_cond {
-	CONDITION_VARIABLE cond;
+	pthread_cond_t cond;
 };
 typedef struct pt_cond cnd_t;
 
 static inline int cnd_init(cnd_t *cnd)
 {
+	int errcode;
+
 	if (!cnd)
 		return thrd_error;
 
-	InitializeConditionVariable(&cnd->cond);
+	errcode = pthread_cond_init(&cnd->cond, NULL);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 static inline int cnd_destroy(cnd_t *cnd)
 {
+	int errcode;
+
 	if (!cnd)
 		return thrd_error;
 
-	/* Nothing to do. */
+	errcode = pthread_cond_destroy(&cnd->cond);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 static inline int cnd_signal(cnd_t *cnd)
 {
+	int errcode;
+
 	if (!cnd)
 		return thrd_error;
 
-	WakeConditionVariable(&cnd->cond);
+	errcode = pthread_cond_signal(&cnd->cond);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 static inline int cnd_broadcast(cnd_t *cnd)
 {
+	int errcode;
+
 	if (!cnd)
 		return thrd_error;
 
-	WakeAllConditionVariable(&cnd->cond);
+	errcode = pthread_cond_broadcast(&cnd->cond);
+	if (errcode)
+		return thrd_error;
 
 	return thrd_success;
 }
 
 static inline int cnd_wait(cnd_t *cnd, mtx_t *mtx)
 {
-	BOOL success;
+	int errcode;
 
 	if (!cnd || !mtx)
 		return thrd_error;
 
-	success = SleepConditionVariableCS(&cnd->cond, &mtx->cs, INFINITE);
-	if (!success)
+	errcode = pthread_cond_wait(&cnd->cond, &mtx->mutex);
+	if (errcode)
 		return thrd_error;
 
 	return thrd_success;
 }
 
-#endif /* THREADS_H */
+#endif /* PT_THREADS_H */
