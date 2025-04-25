@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013-2022, Intel Corporation
+ * Copyright (c) 2013-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -74,9 +75,17 @@ int pt_cpu_errata(struct pt_errata *errata, const struct pt_cpu *cpu)
 		case 0x55:
 		case 0x6a:
 		case 0x6c:
-		case 0x8f:
 			errata->bdm70 = 1;
 			errata->skl014 = 1;
+			errata->skd022 = 1;
+			errata->skz84 = 1;
+			return 0;
+
+		case 0x8f:
+		case 0xcf:
+		case 0xad:
+		case 0xae:
+			errata->bdm70 = 1;
 			errata->skd022 = 1;
 			errata->skz84 = 1;
 			return 0;
@@ -95,9 +104,17 @@ int pt_cpu_errata(struct pt_errata *errata, const struct pt_cpu *cpu)
 
 		case 0x97:
 		case 0x9a:
+		case 0xba:
+		case 0xb7:
 		case 0xbf:
+		case 0xc5:
+		case 0xc6:
+		case 0xb5:
+		case 0xaa:
+		case 0xac:
+		case 0xbd:
+		case 0xcc:
 			errata->bdm70 = 1;
-			errata->skl014 = 1;
 			errata->skd022 = 1;
 			errata->apl11 = 1;
 			return 0;
@@ -112,7 +129,20 @@ int pt_cpu_errata(struct pt_errata *errata, const struct pt_cpu *cpu)
 		case 0x86:
 		case 0x96:
 		case 0x9c:
+		case 0xb6:
+		case 0xaf:
+		case 0xdd:
 			errata->apl11 = 1;
+			return 0;
+		}
+		break;
+
+	case 0x13:
+		switch (cpu->model) {
+		case 0x01:
+			errata->bdm70 = 1;
+			errata->skd022 = 1;
+			errata->skz84 = 1;
 			return 0;
 		}
 		break;

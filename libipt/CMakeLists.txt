@@ -1,4 +1,5 @@
-# Copyright (c) 2013-2022, Intel Corporation
+# Copyright (c) 2013-2025, Intel Corporation
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -36,6 +37,7 @@ set(LIBIPT_SECTION_FILES
 set(LIBIPT_FILES
   src/pt_error.c
   src/pt_packet_decoder.c
+  src/pt_event_decoder.c
   src/pt_query_decoder.c
   src/pt_encoder.c
   src/pt_sync.c
@@ -51,7 +53,6 @@ set(LIBIPT_FILES
   src/pt_asid.c
   src/pt_event_queue.c
   src/pt_packet.c
-  src/pt_decoder_function.c
   src/pt_config.c
   src/pt_insn.c
   src/pt_block_decoder.c
@@ -98,9 +99,12 @@ configure_file(
 
 set_target_properties(libipt PROPERTIES
   PREFIX ""
+  IMPORT_PREFIX ""
   PUBLIC_HEADER ${CMAKE_CURRENT_BINARY_DIR}/include/intel-pt.h
   VERSION   ${PT_VERSION}
   SOVERSION ${PT_VERSION_MAJOR}
+  C_STANDARD 11
+  C_STANDARD_REQUIRED ON
 )
 
 install(TARGETS libipt
@@ -127,7 +131,7 @@ add_ptunit_std_test(event_queue)
 add_ptunit_std_test(image src/pt_asid.c)
 add_ptunit_std_test(sync src/pt_packet.c)
 add_ptunit_std_test(config)
-add_ptunit_std_test(image_section_cache)
+add_ptunit_std_test(image_section_cache ${LIBIPT_SECTION_FILES})
 add_ptunit_std_test(block_cache)
 add_ptunit_std_test(msec_cache)
 
@@ -135,14 +139,13 @@ add_ptunit_c_test(mapped_section src/pt_asid.c)
 add_ptunit_c_test(query
   src/pt_encoder.c
   src/pt_last_ip.c
-  src/pt_packet_decoder.c
+  src/pt_event_decoder.c
   src/pt_sync.c
   src/pt_tnt_cache.c
   src/pt_time.c
   src/pt_event_queue.c
   src/pt_query_decoder.c
   src/pt_packet.c
-  src/pt_decoder_function.c
   src/pt_packet_decoder.c
   src/pt_config.c
   src/pt_time.c
@@ -159,14 +162,26 @@ add_ptunit_c_test(packet
   src/pt_packet_decoder.c
   src/pt_sync.c
   src/pt_packet.c
-  src/pt_decoder_function.c
   src/pt_config.c
 )
-add_ptunit_c_test(fetch
-  src/pt_decoder_function.c
+add_ptunit_c_test(encoder
   src/pt_encoder.c
   src/pt_config.c
 )
+add_ptunit_c_test(packet_decoder
+  src/pt_packet_decoder.c
+  src/pt_packet.c
+  src/pt_config.c
+  src/pt_sync.c
+  src/pt_query_decoder.c
+  src/pt_event_decoder.c
+  src/pt_event_queue.c
+  src/pt_last_ip.c
+  src/pt_tnt_cache.c
+  src/pt_time.c
+)
+add_ptunit_c_test(insn_decoder ${LIBIPT_FILES})
+add_ptunit_c_test(block_decoder ${LIBIPT_FILES})
 
 add_ptunit_cpp_test(cpp)
 add_ptunit_libraries(cpp libipt)

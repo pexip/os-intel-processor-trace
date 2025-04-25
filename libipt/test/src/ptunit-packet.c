@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2014-2022, Intel Corporation
+ * Copyright (c) 2014-2025, Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -272,7 +273,7 @@ static struct ptunit_result ip(struct packet_fixture *pfix,
 }
 
 static struct ptunit_result mode_exec(struct packet_fixture *pfix,
-				      enum pt_exec_mode mode)
+				      enum pt_exec_mode mode, int iflag)
 {
 	struct pt_packet_mode_exec packet;
 
@@ -282,6 +283,7 @@ static struct ptunit_result mode_exec(struct packet_fixture *pfix,
 	pfix->packet[0].payload.mode.leaf = pt_mol_exec;
 	pfix->packet[0].payload.mode.bits.exec.csl = packet.csl;
 	pfix->packet[0].payload.mode.bits.exec.csd = packet.csd;
+	pfix->packet[0].payload.mode.bits.exec.iflag = iflag ? 1u : 0u;
 
 	ptu_test(pfix_test, pfix);
 
@@ -464,6 +466,29 @@ static struct ptunit_result ptw(struct packet_fixture *pfix, uint8_t plc,
 	return ptu_passed();
 }
 
+static struct ptunit_result cfe(struct packet_fixture *pfix)
+{
+	pfix->packet[0].type = ppt_cfe;
+	pfix->packet[0].payload.cfe.type = pt_cfe_vmexit_intr;
+	pfix->packet[0].payload.cfe.vector = pt_cfe_intr_pf;
+	pfix->packet[0].payload.cfe.ip = 1;
+
+	ptu_test(pfix_test, pfix);
+
+	return ptu_passed();
+}
+
+static struct ptunit_result evd(struct packet_fixture *pfix)
+{
+	pfix->packet[0].type = ppt_evd;
+	pfix->packet[0].payload.evd.type = pt_evd_vmxq;
+	pfix->packet[0].payload.evd.payload = 0xf000baaa;
+
+	ptu_test(pfix_test, pfix);
+
+	return ptu_passed();
+}
+
 static struct ptunit_result cutoff(struct packet_fixture *pfix,
 				   enum pt_packet_type type)
 {
@@ -603,9 +628,9 @@ int main(int argc, char **argv)
 	ptu_run_fp(suite, ip, pfix, ppt_fup, pt_ipc_sext_48, 0x42ull);
 	ptu_run_fp(suite, ip, pfix, ppt_fup, pt_ipc_full, 0x42ull);
 
-	ptu_run_fp(suite, mode_exec, pfix, ptem_16bit);
-	ptu_run_fp(suite, mode_exec, pfix, ptem_32bit);
-	ptu_run_fp(suite, mode_exec, pfix, ptem_64bit);
+	ptu_run_fp(suite, mode_exec, pfix, ptem_16bit, 1);
+	ptu_run_fp(suite, mode_exec, pfix, ptem_32bit, 0);
+	ptu_run_fp(suite, mode_exec, pfix, ptem_64bit, 1);
 	ptu_run_f(suite, mode_tsx, pfix);
 
 	ptu_run_f(suite, pip, pfix);
@@ -624,6 +649,8 @@ int main(int argc, char **argv)
 	ptu_run_f(suite, pwrx, pfix);
 	ptu_run_fp(suite, ptw, pfix, 0, 1);
 	ptu_run_fp(suite, ptw, pfix, 1, 0);
+	ptu_run_f(suite, cfe, pfix);
+	ptu_run_f(suite, evd, pfix);
 
 	ptu_run_fp(suite, cutoff, pfix, ppt_psb);
 	ptu_run_fp(suite, cutoff_ip, pfix, ppt_tip);
@@ -647,213 +674,8 @@ int main(int argc, char **argv)
 	ptu_run_fp(suite, cutoff, pfix, ppt_pwre);
 	ptu_run_fp(suite, cutoff, pfix, ppt_pwrx);
 	ptu_run_fp(suite, cutoff, pfix, ppt_ptw);
+	ptu_run_fp(suite, cutoff, pfix, ppt_cfe);
+	ptu_run_fp(suite, cutoff, pfix, ppt_evd);
 
 	return ptunit_report(&suite);
-}
-
-
-/* Dummy decode functions to satisfy link dependencies.
- *
- * As a nice side-effect, we will know if we need to add more tests when
- * adding new decoder functions.
- */
-struct pt_query_decoder;
-
-int pt_qry_decode_unknown(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_pad(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_psb(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tip(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tnt_8(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tnt_64(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tip_pge(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tip_pgd(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_fup(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_fup(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_pip(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_pip(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_ovf(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_mode(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_mode(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_psbend(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tsc(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_tsc(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_cbr(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_cbr(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_tma(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_mtc(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_cyc(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_stop(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_vmcs(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_vmcs(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_mnt(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_header_mnt(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_exstop(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_mwait(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_pwre(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_pwrx(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
-}
-int pt_qry_decode_ptw(struct pt_query_decoder *d)
-{
-	(void) d;
-
-	return -pte_internal;
 }
